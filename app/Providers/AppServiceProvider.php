@@ -1,11 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Providers;
 
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
+    private const int API_REQUESTS_PER_MINUTE = 60;
+
     /**
      * Register any application services.
      */
@@ -19,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        RateLimiter::for('api', fn (Request $request) => Limit::perMinute(self::API_REQUESTS_PER_MINUTE)
+            ->by($request->user()?->id ?: $request->ip()));
     }
 }
