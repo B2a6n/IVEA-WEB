@@ -256,7 +256,7 @@ Rutas bajo `resources/views/components/`. Props tipadas con `@props`, atributos 
 | `ui/avatar` | Inicial en círculo `bg-surface-container-high text-primary font-headline`; seleccionado `bg-primary text-on-primary`. |
 | `ui/filter-bar` | Tarjeta con búsqueda + selects + "Reestablecer" + acción primaria/export a la derecha. |
 | `ui/segmented` | Fondo `bg-surface-container-low`, opción activa `bg-surface-container-lowest shadow-level-1`. |
-| `ui/slide-over` | Panel de detalle del Directorio de Educandos: drawer derecho `max-w-md` nivel 3 sobre backdrop `bg-inverse-surface/40`; cierra con Escape, clic fuera y botón (foco al abrir, se devuelve al cerrar). Estado `open`/`close()` en el scope Alpine padre (`educandoPanel`). |
+| `ui/slide-over` | Panel de detalle del Directorio de Educandos: drawer derecho `max-w-md` nivel 3 sobre backdrop `bg-inverse-surface/40`; cierra con Escape, clic fuera y botón. `x-trap.inert.noscroll="open"` (`@alpinejs/focus`) atrapa el foco, bloquea el scroll y deja inerte el resto de la página; el foco vuelve al botón que lo abrió. Estado `open`/`close()` en el scope Alpine padre (`educandoPanel`). |
 | `ui/info-banner` | `bg-surface-container-low rounded-lg p-space-lg` con ícono en `bg-surface-container-lowest rounded-control`. |
 | `ui/empty-state` | Ícono `text-outline`, título `headline-sm`, texto `body-md`, acción opcional. |
 | `ui/checkbox` | `size-4 rounded-sm accent-primary-container`, etiqueta `text-body-md text-on-surface-variant`, `old()` automático. |

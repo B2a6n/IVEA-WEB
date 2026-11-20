@@ -55,6 +55,7 @@ export default function educandoPanel() {
             controller?.abort();
             this.open = false;
             this.loading = false;
+            // x-trap restores focus on release too; explicit for browsers that do not focus buttons on click.
             trigger?.focus();
             trigger = null;
         },
