@@ -4,6 +4,134 @@
 @source '../../storage/framework/views/*.php';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    /* Tipografía */
+    --font-headline: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-sans: var(--font-body);
+
+    --text-headline-xl: 36px;
+    --text-headline-xl--line-height: 44px;
+    --text-headline-xl--font-weight: 700;
+    --text-headline-xl-mobile: 28px;
+    --text-headline-xl-mobile--line-height: 36px;
+    --text-headline-xl-mobile--font-weight: 700;
+    --text-headline-lg: 30px;
+    --text-headline-lg--line-height: 38px;
+    --text-headline-lg--font-weight: 700;
+    --text-headline-lg-mobile: 24px;
+    --text-headline-lg-mobile--line-height: 32px;
+    --text-headline-lg-mobile--font-weight: 700;
+    --text-headline-md: 22px;
+    --text-headline-md--line-height: 28px;
+    --text-headline-md--font-weight: 600;
+    --text-headline-sm: 18px;
+    --text-headline-sm--line-height: 24px;
+    --text-headline-sm--font-weight: 600;
+    --text-body-lg: 16px;
+    --text-body-lg--line-height: 24px;
+    --text-body-md: 14px;
+    --text-body-md--line-height: 20px;
+    --text-body-sm: 13px;
+    --text-body-sm--line-height: 18px;
+    --text-label-lg: 14px;
+    --text-label-lg--line-height: 20px;
+    --text-label-lg--font-weight: 600;
+    --text-label-md: 12px;
+    --text-label-md--line-height: 16px;
+    --text-label-md--font-weight: 500;
+    --text-label-sm: 11px;
+    --text-label-sm--line-height: 14px;
+    --text-label-sm--font-weight: 500;
+
+    /* Superficies (DESIGN.md frontmatter) */
+    --color-background: #f8f9ff;
+    --color-on-background: #0b1c30;
+    --color-surface: #f8f9ff;
+    --color-surface-dim: #cbdbf5;
+    --color-surface-bright: #f8f9ff;
+    --color-surface-container-lowest: #ffffff;
+    --color-surface-container-low: #eff4ff;
+    --color-surface-container: #e5eeff;
+    --color-surface-container-high: #dce9ff;
+    --color-surface-container-highest: #d3e4fe;
+    --color-surface-variant: #d3e4fe;
+    --color-on-surface: #0b1c30;
+    --color-on-surface-variant: #434655;
+    --color-inverse-surface: #213145;
+    --color-inverse-on-surface: #eaf1ff;
+    --color-outline: #747686;
+    --color-outline-variant: #c4c5d7;
+
+    /* Primario: azul real */
+    --color-primary: #0037b0;
+    --color-on-primary: #ffffff;
+    --color-primary-container: #1d4ed8;
+    --color-primary-hover: #1e40af;
+    --color-on-primary-container: #cad3ff;
+    --color-primary-fixed: #dce1ff;
+    --color-primary-fixed-dim: #b7c4ff;
+    --color-on-primary-fixed: #001551;
+    --color-on-primary-fixed-variant: #0039b5;
+    --color-inverse-primary: #b7c4ff;
+    --color-focus-ring: #dbeafe;
+
+    /* Secundario: esmeralda (éxito, exportar, dominio) */
+    --color-secondary: #006c4a;
+    --color-on-secondary: #ffffff;
+    --color-secondary-container: #82f5c1;
+    --color-on-secondary-container: #00714e;
+    --color-secondary-fixed: #85f8c4;
+    --color-secondary-fixed-dim: #68dba9;
+    --color-on-secondary-fixed: #002114;
+    --color-on-secondary-fixed-variant: #005137;
+
+    /* Terciario: terracota (refuerzo, prioridad) */
+    --color-tertiary: #7f2500;
+    --color-on-tertiary: #ffffff;
+    --color-tertiary-container: #a73400;
+    --color-on-tertiary-container: #ffc9b7;
+    --color-tertiary-fixed: #ffdbcf;
+    --color-tertiary-fixed-dim: #ffb59c;
+    --color-on-tertiary-fixed: #390c00;
+    --color-on-tertiary-fixed-variant: #832700;
+
+    /* Estados */
+    --color-error: #ba1a1a;
+    --color-on-error: #ffffff;
+    --color-error-container: #ffdad6;
+    --color-on-error-container: #93000a;
+    --color-warning: #b45309;
+    --color-warning-fill: #d97706;
+    --color-warning-container: #fef3c7;
+
+    /* Paleta institucional IVEA (muestreada de logo-ivea-horizontal.png) */
+    --color-ivea-terracota: #9a4735;
+    --color-ivea-carbon: #464646;
+    --color-ivea-gris: #87868a;
+
+    /* Forma */
+    --radius-sm: 0.25rem;
+    --radius-control: 0.5rem;
+    --radius-md: 0.75rem;
+    --radius-lg: 1rem;
+    --radius-xl: 1.5rem;
+
+    /* Espaciado */
+    --spacing-gutter: 1.5rem;
+    --spacing-margin: 2rem;
+    --spacing-space-xs: 0.25rem;
+    --spacing-space-sm: 0.5rem;
+    --spacing-space-md: 1rem;
+    --spacing-space-lg: 1.5rem;
+    --spacing-space-xl: 2rem;
+
+    /* Elevación */
+    --shadow-level-1: 0 1px 3px 0 rgb(15 23 42 / 0.05);
+    --shadow-level-2: 0 10px 15px -3px rgb(15 23 42 / 0.08), 0 4px 6px -4px rgb(15 23 42 / 0.03);
+    --shadow-level-3: 0 20px 25px -5px rgb(15 23 42 / 0.1), 0 8px 10px -6px rgb(15 23 42 / 0.04);
+}
+
+/* Alpine: hide elements until the component has initialised. */
+[x-cloak] {
+    display: none !important;
 }

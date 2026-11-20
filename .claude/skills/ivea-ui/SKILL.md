@@ -1,6 +1,6 @@
 ---
 name: ivea-ui
-description: Sistema visual obligatorio de IVEA Analítica. Úsala SIEMPRE antes de crear o modificar cualquier vista Blade, layout, componente, estilo Tailwind o gráfica Chart.js del proyecto (Login, Dashboard, Control de Módulos, Directorio de Educandos). Define tokens Tailwind v4, tipografía, paleta institucional IVEA/Veracruz, logos con placeholders y el catálogo de componentes Blade.
+description: Sistema visual obligatorio de IVEA Analítica. Úsala SIEMPRE antes de crear o modificar cualquier vista Blade, layout, componente, estilo Tailwind o gráfica Chart.js del proyecto (Login, Dashboard, Control de Módulos, Directorio de Educandos). Define tokens Tailwind v4, tipografía, paleta institucional IVEA/Veracruz, logotipo institucional único y el catálogo de componentes Blade.
 ---
 
 # IVEA UI — sistema visual obligatorio
@@ -25,7 +25,7 @@ Si algo de esta skill contradice `DESIGN.md`, gana `DESIGN.md`. Actualiza esta s
 4. **Componentes Blade del catálogo** (`resources/views/components/`). Si una vista necesita un patrón que ya
    existe en el catálogo, úsalo; si no existe todavía, créalo en el catálogo primero y luego úsalo. Nunca
    dupliques el markup de una tarjeta, botón, badge o input dentro de una vista.
-5. **Logos solo vía `<x-brand.logo>`**: nunca un `<img src="...logo...">` directo (ver "Logos y placeholders").
+5. **Logos solo vía `<x-brand.logo>`**: nunca un `<img src="...logo...">` directo (ver "Logotipo institucional").
 6. **Español institucional** en toda la UI. Nombres de navegación fijos: *Desempeño* (Dashboard),
    *Control de Módulos*, *Directorio de Educandos*. En los bocetos aparecen "Juegos / Módulos" y "Usuarios":
    sustitúyelos por estos nombres. Las personas atendidas se llaman **educandos**, no "usuarios" ni "alumnos".
@@ -208,38 +208,29 @@ Espaciado: `p-space-md`, `gap-space-sm`, `px-margin`, `gap-gutter`, etc. Los tok
 Iconos: **Material Symbols Outlined** (los mismos de los bocetos) mediante `<x-ui.icon name="bar_chart" />`.
 Iconos de navegación: `bar_chart` (Desempeño), `extension` (Control de Módulos), `group` (Directorio de Educandos).
 
-## 3. Logos y placeholders
+## 3. Logotipo institucional (archivo único)
 
-| Activo | Archivo | Estado | Uso |
-|--------|---------|--------|-----|
-| Logo horizontal | `public/images/logo-ivea-horizontal.png` (1024x384, PNG transparente) | Disponible | Login (cabecera de la tarjeta), pie institucional, encabezados de exportación PDF |
-| Logo circular | `public/images/logo-ivea-circular.png` | **Pendiente** | Marca del sidebar (en lugar del ícono de birrete del boceto), favicon, avatar institucional |
-| Banner Veracruz | `public/images/banner-veracruz.png` | **Pendiente** | Franja superior del Login y pie institucional |
+El sistema usa **un solo archivo de logotipo**: `public/images/logo-ivea-horizontal.png` (1024x384, PNG
+transparente). No hay logo circular ni banner de Veracruz; no los referencies ni crees placeholders para ellos.
 
-Todo logo se pinta con `<x-brand.logo variant="horizontal|circular" />` y el banner con `<x-brand.banner />`.
-Ambos componentes comprueban `file_exists(public_path(...))`: si el archivo existe muestran la imagen; si no,
-muestran el placeholder. Así, al copiar los PNG a `public/images/` cambian solos sin tocar vistas.
+Se pinta siempre con `<x-brand.logo />` (sin props), dimensionado con clases de altura:
 
-Placeholders institucionales **limpios** (sin rayas, sin "placeholder", sin texto lorem, sin bordes punteados):
+| Lugar | Clases |
+|-------|--------|
+| Tarjeta de Login / recuperar contraseña (`layouts/guest`) | `h-12 w-auto`, centrado |
+| Esquina superior izquierda del sidebar (`layouts/app`) | `h-9 w-auto`; en el riel colapsado de 72px (`md:`) se escala por ancho: `md:h-auto md:w-14 lg:h-9 lg:w-auto` |
 
-- **Circular:** círculo `rounded-full bg-surface-container-lowest ring-1 ring-outline-variant` con las siglas
-  `IVEA` en `font-headline font-bold text-ivea-terracota`, tamaño por prop (`size="40"` por defecto).
-- **Banner:** franja de 4px de alto `bg-ivea-terracota` sobre una banda `bg-surface-container-lowest` con el texto
-  `Gobierno del Estado de Veracruz` en `text-label-md text-ivea-carbon`, alineado a la izquierda, altura 48px.
-- **Horizontal:** si el archivo faltara, texto `IVEA` en `font-headline font-bold text-ivea-terracota` + subtítulo
-  `Instituto Veracruzano de Educación para los Adultos` en `text-label-sm text-ivea-carbon`.
+Reglas del logo: siempre con `alt="IVEA - Instituto Veracruzano de Educación para los Adultos"` (lo pone el
+componente), sobre fondo blanco o `surface-container-lowest`, nunca recoloreado, estirado (usa `h-* w-auto`), con
+sombra ni sobre azul primario. Altura mínima: 36px (`h-9`, solo en el sidebar); 48px (`h-12`) en el resto.
 
-Reglas del logo: siempre con `alt="IVEA - Instituto Veracruzano de Educación para los Adultos"`, sobre fondo blanco
-o `surface-container-lowest`, nunca recoloreado, estirado (usa `h-* w-auto`), con sombra ni sobre azul primario.
-Altura mínima del horizontal: 40px. Pie institucional fijo:
+Pie institucional: texto discreto dentro de la tarjeta de `layouts/guest`, en `text-label-md text-outline`:
 `Gobierno del Estado de Veracruz • Sistema de Analítica Educativa v1.0`.
 
 ### Uso de la paleta institucional
 
 La UI es azul (primario) por especificación; el terracota/carbón de IVEA es **acento de marca**, no de interfaz:
-solo en marca (logo, placeholders, banner), en el franjeado institucional y como una serie más en gráficas.
-Nunca en botones, enlaces, foco ni estados. Cuando llegue `banner-veracruz.png`, muestrea sus colores y, si
-introducen un tono de Veracruz distinto, agrégalo como `--color-veracruz-*` en esta skill y en `app.css`.
+solo en marca (logo) y como una serie más en gráficas. Nunca en botones, enlaces, foco ni estados.
 
 ## 4. Catálogo de componentes Blade
 
@@ -247,11 +238,11 @@ Rutas bajo `resources/views/components/`. Props tipadas con `@props`, atributos 
 
 | Componente | Especificación |
 |------------|---------------|
-| `layouts/app.blade.php` | Shell autenticado: sidebar 260px (`lg:`), colapsado 72px (`md:`), drawer Alpine en móvil; topbar con breadcrumb, búsqueda, campana, usuario y "Cerrar Sesión" (`text-error`); `main` con `px-space-md md:px-space-lg lg:px-margin` y grid 12 columnas `gap-gutter`. Tarjeta "Soporte Institucional / Mesa Técnica IVEA" al pie del sidebar. |
-| `layouts/guest.blade.php` | Login: lienzo `bg-background`, `<x-brand.banner />` arriba, tarjeta nivel 1 centrada `w-full max-w-xl p-space-xl`. |
-| `brand/logo`, `brand/banner` | Ver sección 3. |
+| `resources/views/layouts/app.blade.php` (`@extends`, no componente) | Shell autenticado: sidebar `w-65` (260px, `lg:`), colapsado `w-18` (72px, `md:`), drawer Alpine en móvil; topbar con breadcrumb (`@yield('title')`), nombre + `role->label()` y "Cerrar Sesión" (`danger-link`, POST). Búsqueda y campana se agregan cuando exista su funcionalidad; `main` con `px-space-md md:px-space-lg lg:px-margin` y grid 12 columnas `gap-gutter`. Tarjeta "Soporte Institucional / Mesa Técnica IVEA" al pie del sidebar. |
+| `resources/views/layouts/guest.blade.php` (`@extends`) | Login, recuperar y restablecer contraseña, 403: lienzo `bg-background`, tarjeta nivel 1 centrada `w-full max-w-xl p-space-xl` con logo (`h-12 w-auto`) + eyebrow y pie institucional en texto. `<head>` compartido en `layouts/partials/head.blade.php`. |
+| `brand/logo` | Ver sección 3 (archivo único, sin props). |
 | `ui/icon` | `<span class="material-symbols-outlined" aria-hidden="true">{{ $name }}</span>` con tamaño por clase. |
-| `ui/nav-item` | Inactivo: `text-on-surface-variant hover:bg-surface-container rounded-control`. Activo: `bg-primary text-on-primary rounded-control` + `aria-current="page"`. |
+| `ui/nav-item` | Inactivo: `text-on-surface-variant hover:bg-surface-container rounded-control`. Activo: `bg-primary text-on-primary rounded-control` + `aria-current="page"`. Prop `route`: si `Route::has()` es falso se pinta deshabilitado (`aria-disabled`, `opacity-60`), así las pantallas futuras se activan solas. En `md` la etiqueta es `sr-only`. |
 | `ui/button` | `variant`: `primary` (`bg-primary-container hover:bg-primary-hover text-on-primary`), `export` (`bg-secondary text-on-secondary`), `outline` (`bg-surface-container-lowest border border-outline-variant text-on-surface-variant hover:bg-surface-container-low`), `danger-link` (`text-error`). Todos `h-10 px-space-md rounded-control text-label-lg inline-flex items-center gap-space-sm`, foco `focus-visible:ring-[3px] focus-visible:ring-focus-ring focus-visible:border-primary-container`. |
 | `ui/input`, `ui/select` | `h-10 bg-surface-container-low border border-transparent rounded-control text-body-md`, ícono líder opcional, foco igual que botón. Label encima en `text-label-lg text-on-surface`. Error debajo en `text-body-sm text-error`. Password con toggle de visibilidad en Alpine. |
 | `ui/card` | Nivel 1 (tabla de equivalencias) + `p-space-lg`. Slots `header`, `footer` (footer en `bg-surface-container-low` como en Control de Módulos). |
@@ -266,13 +257,16 @@ Rutas bajo `resources/views/components/`. Props tipadas con `@props`, atributos 
 | `ui/side-panel` | Panel de detalle (Directorio de Educandos): tarjeta nivel 1, botón cerrar, se superpone como drawer en `< lg`. |
 | `ui/info-banner` | `bg-surface-container-low rounded-lg p-space-lg` con ícono en `bg-surface-container-lowest rounded-control`. |
 | `ui/empty-state` | Ícono `text-outline`, título `headline-sm`, texto `body-md`, acción opcional. |
+| `ui/checkbox` | `size-4 rounded-sm accent-primary-container`, etiqueta `text-body-md text-on-surface-variant`, `old()` automático. |
+| `ui/alert` | Mensaje de estado: `tone` `success` (`bg-secondary-container/40 text-on-secondary-container`), `info`, `danger` (`role="alert"`); ícono + texto `body-md`, `rounded-control p-space-md`. |
 | `ui/chart` | `<canvas>` envuelto en contenedor con altura fija + `x-data` que inicializa Chart.js con datos pasados por `@json`. |
 
 ## 5. Mapeo boceto → pantalla
 
 | Pantalla | Boceto | Claves |
 |----------|--------|--------|
-| Login | `login.png` | Tarjeta centrada; sustituir el birrete por `<x-brand.logo variant="horizontal" class="h-12" />`; subtítulo `PANEL DE DESEMPEÑO EDUCATIVO`; "Acceso al Portal"; correo institucional + contraseña; recordar sesión; botón "Ingresar" con flecha; pie institucional. |
+| Login | `login.png` | Tarjeta centrada; sustituir el birrete por `<x-brand.logo class="h-12 w-auto" />`; subtítulo `PANEL DE DESEMPEÑO EDUCATIVO`; "Acceso al Portal"; correo institucional + contraseña; recordar sesión + enlace "¿Olvidaste tu contraseña?"; botón "Ingresar" con flecha; pie institucional. |
+| Recuperar contraseña | `login.png` (misma tarjeta) | `/forgot-password`: "Recuperar Contraseña", correo + "Enviar enlace", `<x-ui.alert>` con el mensaje genérico, enlace "Volver al inicio de sesión". `/reset-password/{token}`: "Restablecer Contraseña", correo prellenado, nueva contraseña + confirmación, "Guardar nueva contraseña". |
 | Desempeño (Dashboard) | `dashboard_principal.png` | Filter bar (módulo, grupo regional, rango de fechas, Actualizar, CSV) → 3 KPI → línea "Progreso Semanal" (8 col) + barras "Desempeño por Módulo" (4 col) → grupos con mayor participación + refuerzo pedagógico. |
 | Control de Módulos | `control_modulos.png` | Eyebrow + título + "Guardar Cambios" → info-banner de sincronización → grid 3 col de tarjetas de módulo con toggle y footer de métricas → info-banner OTA. |
 | Directorio de Educandos | `detalles_desempeno.png` | Título + chips de resumen → filter bar con "Exportar Excel/CSV" (`export`) → tabla paginada (8 col) + side-panel de detalle (4 col). |
@@ -300,7 +294,7 @@ Rutas bajo `resources/views/components/`. Props tipadas con `@props`, atributos 
 - [ ] Cero hex, valores arbitrarios o colores de la paleta por defecto de Tailwind en la vista
 - [ ] Títulos en `font-headline`, cuerpo en `font-body`, cifras con `tabular-nums`
 - [ ] Todo patrón repetible sale de `resources/views/components/`
-- [ ] Logos y banner vía `<x-brand.logo>` / `<x-brand.banner>`
+- [ ] Logo solo vía `<x-brand.logo>` (archivo único `logo-ivea-horizontal.png`)
 - [ ] Nombres de navegación y "educandos" correctos; sin datos de ejemplo del boceto
 - [ ] Revisada en 375px, 768px y 1280px contra el boceto correspondiente
 - [ ] Foco, `aria-*` y textos de estado presentes

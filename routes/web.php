@@ -1,7 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
+use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
+Route::redirect('/', '/dashboard');
+
+Route::middleware('guest')->group(function (): void {
+    Route::get('login', [AuthController::class, 'create'])->name('login');
+    Route::post('login', [AuthController::class, 'store'])->name('login.store');
+
+    Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');
+    Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
+        ->middleware('throttle:password-reset')
+        ->name('password.email');
+
+    Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])->name('password.reset');
+    Route::post('reset-password', [NewPasswordController::class, 'store'])
+        ->middleware('throttle:password-reset')
+        ->name('password.update');
+});
+
+Route::post('logout', [AuthController::class, 'destroy'])->middleware('auth')->name('logout');
+
+// Admin and tutor can read; anything that writes must go in a nested ->middleware('role:admin') group.
+Route::middleware(['auth', 'role:admin,tutor'])->group(function (): void {
+    Route::view('dashboard', 'dashboard.index')->name('dashboard');
 });

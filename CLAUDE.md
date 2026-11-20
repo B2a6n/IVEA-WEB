@@ -26,7 +26,7 @@ endpoints nuevos sin aprobación explícita.
 
 | # | Módulo | Boceto de referencia |
 |---|--------|----------------------|
-| 1 | Login | `docs/ui-stitch/login.png` |
+| 1 | Login (incluye recuperar/restablecer contraseña vía Password Broker) | `docs/ui-stitch/login.png` |
 | 2 | Dashboard | `docs/ui-stitch/dashboard_principal.png`, `docs/ui-stitch/detalles_desempeno.png` |
 | 3 | Control de Módulos | `docs/ui-stitch/control_modulos.png` |
 | 4 | Directorio de Educandos | (sin boceto aún; seguir los tokens de `DESIGN.md`) |
@@ -43,8 +43,9 @@ endpoints nuevos sin aprobación explícita.
   - `DESIGN.md` es la fuente de verdad de colores, tipografía, espaciado y radios. Mapear sus tokens al tema de
     Tailwind (`@theme` en `resources/css/app.css`); no usar colores hex sueltos en las vistas.
   - Los `.png` son los bocetos de cada pantalla; replicar su estructura y jerarquía visual.
-- **Logos institucionales:** `public/images/` (p. ej. `logo-ivea-horizontal.png`). Referenciarlos con
-  `asset('images/...')`; no modificar ni recolorear los logos.
+- **Logotipo institucional (archivo único):** `public/images/logo-ivea-horizontal.png`. Se usa en la tarjeta de
+  Login (`h-12 w-auto`) y en el sidebar (`h-9 w-auto`), siempre vía `<x-brand.logo>`; no hay logo circular ni
+  banner. No modificar ni recolorear el logo.
 - Gráficas con Chart.js usando la paleta de `DESIGN.md`.
 
 ## Critical Rules
