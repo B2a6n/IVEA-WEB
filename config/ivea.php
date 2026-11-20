@@ -20,4 +20,16 @@ return [
         'password' => env('IVEA_ADMIN_PASSWORD'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Reporting Timezone
+    |--------------------------------------------------------------------------
+    |
+    | Calendar days on the dashboard (trend buckets and period start) follow
+    | the educandos' local time. Timestamps are still stored as timestamptz.
+    |
+    */
+
+    'reporting_timezone' => env('IVEA_REPORTING_TIMEZONE', 'America/Mexico_City'),
+
 ];
