@@ -21,6 +21,15 @@ class UserProgressScore extends Model
     use HasFactory;
 
     /**
+     * Average score as a percentage of each play's max_score, rounded to 1 decimal. Never divides by zero:
+     * user_progress_scores_score_check guarantees max_score > 0. NULL when there are no rows.
+     */
+    public static function averagePercentSql(string $alias = 'ups'): string
+    {
+        return "ROUND(AVG({$alias}.score * 100.0 / {$alias}.max_score), 1)";
+    }
+
+    /**
      * @return array<string, string>
      */
     protected function casts(): array

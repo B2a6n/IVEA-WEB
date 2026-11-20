@@ -17,8 +17,10 @@ Si algo de esta skill contradice `DESIGN.md`, gana `DESIGN.md`. Actualiza esta s
 
 1. **Solo tokens.** Nada de hex sueltos, `bg-[#...]`, `text-[13px]`, `style="color:..."` ni la paleta por defecto
    de Tailwind (`blue-700`, `slate-500`, `emerald-600`, `gray-*`...) en vistas. Usa exclusivamente las utilidades
-   generadas por el bloque `@theme` de abajo. Única excepción: los colores de Chart.js, que se leen de las
-   variables CSS (ver "Gráficas").
+   generadas por el bloque `@theme` de abajo. Excepciones: los colores de Chart.js, que se leen de las
+   variables CSS (ver "Gráficas"); la ficha PDF (`educandos/pdf.blade.php`), que dompdf renderiza sin el build
+   de Vite y por eso lleva CSS en línea con los valores hex de `DESIGN.md` (mantenerlos sincronizados); y el
+   ancho de relleno de `ui/progress` (`style="width: N%"`), que es un dato, no un token.
 2. **Tipografía:** títulos y cifras KPI en `font-headline` (Plus Jakarta Sans); todo lo demás en `font-body`
    (Inter). Los bocetos PNG muestran títulos con serifa: es un artefacto del render de Stitch, **no** lo copies.
 3. **Cifras con `tabular-nums`** en KPIs, tablas, porcentajes, puntajes, fechas y paginación.
@@ -244,8 +246,8 @@ Rutas bajo `resources/views/components/`. Props tipadas con `@props`, atributos 
 | `ui/icon` | `<span class="material-symbols-outlined" aria-hidden="true">{{ $name }}</span>` con tamaño por clase. |
 | `ui/nav-item` | Inactivo: `text-on-surface-variant hover:bg-surface-container rounded-control`. Activo: `bg-primary text-on-primary rounded-control` + `aria-current="page"`. Prop `route`: si `Route::has()` es falso se pinta deshabilitado (`aria-disabled`, `opacity-60`), así las pantallas futuras se activan solas. En `md` la etiqueta es `sr-only`. |
 | `ui/button` | `variant`: `primary` (`bg-primary-container hover:bg-primary-hover text-on-primary`), `export` (`bg-secondary text-on-secondary`), `outline` (`bg-surface-container-lowest border border-outline-variant text-on-surface-variant hover:bg-surface-container-low`), `danger-link` (`text-error`). Todos `h-10 px-space-md rounded-control text-label-lg inline-flex items-center gap-space-sm`, foco `focus-visible:ring-[3px] focus-visible:ring-focus-ring focus-visible:border-primary-container`. |
-| `ui/input`, `ui/select` | `h-10 bg-surface-container-low border border-transparent rounded-control text-body-md`, ícono líder opcional, foco igual que botón. Label encima en `text-label-lg text-on-surface`. Error debajo en `text-body-sm text-error`. Password con toggle de visibilidad en Alpine. |
-| `ui/card` | Nivel 1 (tabla de equivalencias) + `p-space-lg`. Slots `header`, `footer` (footer en `bg-surface-container-low` como en Control de Módulos). |
+| `ui/input`, `ui/select` | `h-10 bg-surface-container-low border border-transparent rounded-control text-body-md`, ícono líder opcional, foco igual que botón. Label encima en `text-label-lg text-on-surface`. Error debajo en `text-body-sm text-error`. Password con toggle de visibilidad en Alpine. En formularios GET de filtros, `ui/select` va con `:use-old="false"` (tras un error, lo flasheado no es lo aplicado). |
+| `ui/card` | Nivel 1 (tabla de equivalencias) + `p-space-lg`. Slots `header`, `footer` (footer en `bg-surface-container-low` como en Control de Módulos). Prop `flush` quita el padding del cuerpo (tablas a borde). |
 | `ui/kpi-card` | Eyebrow `label-sm`, título `headline-sm`, cifra `headline-lg tabular-nums` + unidad `body-md`, badge de variación, barra de progreso y pie de metadatos. 4-up en `lg` (`col-span-3`), 2-up en `md`, apilado en móvil. |
 | `ui/badge` | `rounded-full px-space-sm py-space-xs text-label-md`. `tone`: `success` (`bg-secondary-container text-on-secondary-container`), `info` (`bg-primary-fixed text-on-primary-fixed-variant`), `warning` (`bg-warning-container text-warning`), `danger` (`bg-error-container text-on-error-container`), `neutral` (`bg-surface-container text-on-surface-variant`). |
 | `ui/progress` | Track `h-2 rounded-full bg-surface-container`; relleno por nivel: `on-track` → `bg-primary-container`, `mastered` → `bg-secondary`, `review` → `bg-warning-fill`, `risk` → `bg-tertiary-container`. `role="progressbar"` con `aria-valuenow`. |
@@ -254,12 +256,12 @@ Rutas bajo `resources/views/components/`. Props tipadas con `@props`, atributos 
 | `ui/avatar` | Inicial en círculo `bg-surface-container-high text-primary font-headline`; seleccionado `bg-primary text-on-primary`. |
 | `ui/filter-bar` | Tarjeta con búsqueda + selects + "Reestablecer" + acción primaria/export a la derecha. |
 | `ui/segmented` | Fondo `bg-surface-container-low`, opción activa `bg-surface-container-lowest shadow-level-1`. |
-| `ui/side-panel` | Panel de detalle (Directorio de Educandos): tarjeta nivel 1, botón cerrar, se superpone como drawer en `< lg`. |
+| `ui/slide-over` | Panel de detalle del Directorio de Educandos: drawer derecho `max-w-md` nivel 3 sobre backdrop `bg-inverse-surface/40`; cierra con Escape, clic fuera y botón (foco al abrir, se devuelve al cerrar). Estado `open`/`close()` en el scope Alpine padre (`educandoPanel`). |
 | `ui/info-banner` | `bg-surface-container-low rounded-lg p-space-lg` con ícono en `bg-surface-container-lowest rounded-control`. |
 | `ui/empty-state` | Ícono `text-outline`, título `headline-sm`, texto `body-md`, acción opcional. |
 | `ui/checkbox` | `size-4 rounded-sm accent-primary-container`, etiqueta `text-body-md text-on-surface-variant`, `old()` automático. |
 | `ui/alert` | Mensaje de estado: `tone` `success` (`bg-secondary-container/40 text-on-secondary-container`), `info`, `danger` (`role="alert"`); ícono + texto `body-md`, `rounded-control p-space-md`. |
-| `ui/chart` | `<canvas>` envuelto en contenedor con altura fija + `x-data` que inicializa Chart.js con datos pasados por `@json`. |
+| `ui/chart` | `<canvas>` en contenedor de altura fija + `x-data="ivaChart(kind)"`. Datos del servidor con `:data` (atributo `data-chart`) o de una expresión Alpine del scope padre con `source` (p. ej. `detail.chart` del slide-over). |
 
 ## 5. Mapeo boceto → pantalla
 

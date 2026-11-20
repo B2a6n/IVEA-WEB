@@ -9,21 +9,19 @@ use App\Data\DashboardFiltersData;
 use App\Enums\UserRole;
 use App\Models\GameModule;
 use App\Models\Group;
+use App\Models\UserProgressScore;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 final class DashboardAnalyticsService
 {
-    // max_score > 0 is guaranteed by user_progress_scores_score_check, so this never divides by zero.
-    private const string AVERAGE_PERCENT = 'ROUND(AVG(ups.score * 100.0 / ups.max_score), 1)';
-
     public function overview(DashboardFiltersData $filters): DashboardData
     {
         $kpis = $this->scopedScores($filters)
             ->selectRaw('COUNT(DISTINCT ups.user_id) AS active_students')
             ->selectRaw('COUNT(*) AS completed_activities')
-            ->selectRaw(self::AVERAGE_PERCENT.' AS average_score')
+            ->selectRaw(UserProgressScore::averagePercentSql().' AS average_score')
             ->first();
 
         $moduleOptions = GameModule::query()->orderBy('sort_order')->orderBy('id')->pluck('title', 'id')->all();
@@ -37,7 +35,7 @@ final class DashboardAnalyticsService
             trendChart: $this->trendChart($filters),
             moduleChart: $this->moduleChart($filters, $moduleOptions),
             moduleOptions: $moduleOptions,
-            groupOptions: $this->groupOptions(),
+            groupOptions: Group::selectOptions(),
         );
     }
 
@@ -65,7 +63,7 @@ final class DashboardAnalyticsService
         // Bucket by the educandos' local calendar day, not the database session's (UTC).
         $rows = $this->scopedScores($filters)
             ->selectRaw('(ups.played_at AT TIME ZONE ?)::date AS day', [$this->timezone()])
-            ->selectRaw(self::AVERAGE_PERCENT.' AS average')
+            ->selectRaw(UserProgressScore::averagePercentSql().' AS average')
             ->selectRaw('COUNT(*) AS plays')
             ->groupBy('day')
             ->orderBy('day')
@@ -86,7 +84,7 @@ final class DashboardAnalyticsService
     {
         $stats = $this->scopedScores($filters)
             ->select('ups.games_module_id')
-            ->selectRaw(self::AVERAGE_PERCENT.' AS average')
+            ->selectRaw(UserProgressScore::averagePercentSql().' AS average')
             ->selectRaw('COUNT(*) AS plays')
             ->groupBy('ups.games_module_id')
             ->get()
@@ -111,18 +109,5 @@ final class DashboardAnalyticsService
     private function timezone(): string
     {
         return (string) config('ivea.reporting_timezone');
-    }
-
-    /**
-     * @return array<int, string>
-     */
-    private function groupOptions(): array
-    {
-        return Group::query()
-            ->orderBy('zone')
-            ->orderBy('name')
-            ->get(['id', 'zone', 'name'])
-            ->mapWithKeys(fn (Group $group) => [$group->id => "{$group->zone} · {$group->name}"])
-            ->all();
     }
 }

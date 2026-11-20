@@ -165,10 +165,12 @@ const modulesConfig = (data) => {
 
 const BUILDERS = { trend: trendConfig, modules: modulesConfig };
 
-export default function ivaChart(kind) {
+// initialData: chart data from the parent Alpine scope; otherwise it is read from the data-chart attribute.
+export default function ivaChart(kind, initialData = null) {
     // Kept outside Alpine's reactive state: proxying a Chart instance breaks it.
     let chart = null;
     let data = null;
+    let destroyed = false;
     let metric = 'average';
 
     const applyMetric = () => {
@@ -186,8 +188,15 @@ export default function ivaChart(kind) {
 
     return {
         async init() {
-            data = JSON.parse(this.$el.dataset.chart);
+            // A plain copy: Chart.js instruments its data arrays, which must not be Alpine's reactive proxies.
+            data = initialData === null
+                ? JSON.parse(this.$el.dataset.chart)
+                : JSON.parse(JSON.stringify(initialData));
             const Chart = await loadChart();
+            // The element may have been removed (e.g. slide-over closed) while Chart.js was loading.
+            if (destroyed) {
+                return;
+            }
             chart = new Chart(this.$refs.canvas, BUILDERS[kind](data, () => metric));
             applyMetric();
         },
@@ -200,6 +209,7 @@ export default function ivaChart(kind) {
         },
 
         destroy() {
+            destroyed = true;
             chart?.destroy();
             chart = null;
         },

@@ -30,6 +30,21 @@ class Group extends Model
     }
 
     /**
+     * Options for a group filter select, ordered by zone.
+     *
+     * @return array<int, string> id => "Zona · Nombre"
+     */
+    public static function selectOptions(): array
+    {
+        return self::query()
+            ->orderBy('zone')
+            ->orderBy('name')
+            ->get(['id', 'zone', 'name'])
+            ->mapWithKeys(fn (self $group) => [$group->id => "{$group->zone} · {$group->name}"])
+            ->all();
+    }
+
+    /**
      * @return BelongsTo<User, $this>
      */
     public function tutor(): BelongsTo

@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EducandoController;
 use App\Http\Controllers\ModuleControlController;
 use Illuminate\Support\Facades\Route;
 
@@ -32,6 +33,22 @@ Route::post('logout', [AuthController::class, 'destroy'])->middleware('auth')->n
 Route::middleware(['auth', 'role:admin,tutor'])->group(function (): void {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('modulos', [ModuleControlController::class, 'index'])->name('modulos.index');
+
+    Route::get('educandos', [EducandoController::class, 'index'])->name('educandos.index');
+    Route::get('educandos/exportar', [EducandoController::class, 'export'])
+        ->middleware('throttle:educandos-export')
+        ->name('educandos.export');
+    // Non-students answer 404 (UserPolicy::viewEducando). Named limiters: see AppServiceProvider.
+    Route::get('educandos/{user}/detalle', [EducandoController::class, 'show'])
+        ->whereNumber('user')
+        ->middleware('throttle:educandos-detail')
+        ->can('viewEducando', 'user')
+        ->name('educandos.show');
+    Route::get('educandos/{user}/ficha-pdf', [EducandoController::class, 'pdf'])
+        ->whereNumber('user')
+        ->middleware('throttle:educandos-pdf')
+        ->can('viewEducando', 'user')
+        ->name('educandos.pdf');
 
     Route::middleware('role:admin')->group(function (): void {
         // Each real change publishes a config version: throttled per user to keep the history bounded.
