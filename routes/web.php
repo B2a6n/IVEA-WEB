@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ModuleControlController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/dashboard');
@@ -29,4 +30,12 @@ Route::post('logout', [AuthController::class, 'destroy'])->middleware('auth')->n
 // Admin and tutor can read; anything that writes must go in a nested ->middleware('role:admin') group.
 Route::middleware(['auth', 'role:admin,tutor'])->group(function (): void {
     Route::view('dashboard', 'dashboard.index')->name('dashboard');
+    Route::get('modulos', [ModuleControlController::class, 'index'])->name('modulos.index');
+
+    Route::middleware('role:admin')->group(function (): void {
+        // Each real change publishes a config version: throttled per user to keep the history bounded.
+        Route::put('modulos', [ModuleControlController::class, 'update'])
+            ->middleware('throttle:30,1')
+            ->name('modulos.update');
+    });
 });

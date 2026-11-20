@@ -10,6 +10,9 @@ use App\Models\GameModule;
 
 final class MobileConfigService
 {
+    // Invalidated whenever a new configuration is published; reserved for caching current().
+    public const string CACHE_KEY = 'mobile-config.current';
+
     private const array MODULE_COLUMNS = ['slug', 'title', 'description', 'subject_area', 'difficulty_level'];
 
     public function current(): MobileConfigData
