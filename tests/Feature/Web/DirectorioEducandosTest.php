@@ -10,8 +10,10 @@ use App\Models\Group;
 use App\Models\User;
 use App\Models\UserProgressScore;
 use App\Services\EducandoDirectoryService;
+use Closure;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Testing\TestResponse;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
@@ -315,19 +317,24 @@ final class DirectorioEducandosTest extends TestCase
     }
 
     /**
-     * @return array<string, array{string}>
+     * @return array<string, array{string, string}>
      */
     public static function staffTargets(): array
     {
-        return ['admin' => ['admin'], 'tutor' => ['tutor']];
+        return [
+            'admin views admin' => ['admin', 'admin'],
+            'admin views tutor' => ['admin', 'tutor'],
+            'tutor views admin' => ['tutor', 'admin'],
+            'tutor views tutor' => ['tutor', 'tutor'],
+        ];
     }
 
     #[Test]
     #[DataProvider('staffTargets')]
-    public function detail_and_pdf_are_not_found_for_staff_users(string $target): void
+    public function detail_and_pdf_are_not_found_for_staff_users(string $actor, string $target): void
     {
-        $this->actingAs($this->admin)->getJson(route('educandos.show', $this->{$target}))->assertNotFound();
-        $this->actingAs($this->admin)->get(route('educandos.pdf', $this->{$target}))->assertNotFound();
+        $this->actingAs($this->{$actor})->getJson(route('educandos.show', $this->{$target}))->assertNotFound();
+        $this->actingAs($this->{$actor})->get(route('educandos.pdf', $this->{$target}))->assertNotFound();
     }
 
     #[Test]
@@ -388,6 +395,24 @@ final class DirectorioEducandosTest extends TestCase
             ->assertHeader('X-RateLimit-Limit', '20')
             ->assertHeader('X-RateLimit-Remaining', '19');
         $this->getJson(route('educandos.show', $this->rosaura))->assertHeader('X-RateLimit-Remaining', '54');
+    }
+
+    #[Test]
+    public function export_query_count_does_not_grow_with_the_number_of_students(): void
+    {
+        $this->actingAs($this->admin);
+        $baseline = $this->countQueries(fn () => $this->downloadedContent($this->get(route('educandos.export'))));
+
+        foreach (range(1, 10) as $n) {
+            $group = Group::factory()->inZone('Xalapa')->create();
+            $student = $this->student("Educando Extra {$n}", "extra{$n}@correo.test", $group);
+            $this->play($student, $this->letras, 50, 100, '2026-11-01 10:00:00');
+        }
+
+        $this->assertSame(
+            $baseline,
+            $this->countQueries(fn () => $this->downloadedContent($this->get(route('educandos.export')))),
+        );
     }
 
     #[Test]
@@ -474,6 +499,18 @@ final class DirectorioEducandosTest extends TestCase
     private function assertListed(TestResponse $response, array $names): void
     {
         $this->assertSame($names, collect($this->directory($response)->students->items())->pluck('name')->all());
+    }
+
+    private function countQueries(Closure $callback): int
+    {
+        $count = 0;
+        DB::listen(function () use (&$count): void {
+            $count++;
+        });
+
+        $callback();
+
+        return $count;
     }
 
     private function downloadedContent(TestResponse $response): string

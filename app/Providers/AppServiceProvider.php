@@ -7,6 +7,7 @@ namespace App\Providers;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Event;
@@ -44,6 +45,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Any N+1 lazy load fails loudly in local and tests; production only skips the guard.
+        Model::preventLazyLoading(! $this->app->isProduction());
+
         RateLimiter::for('api', fn (Request $request) => Limit::perMinute(self::API_REQUESTS_PER_MINUTE)
             ->by($request->user()?->id ?: $request->ip()));
 

@@ -51,7 +51,7 @@ final class ModelRelationshipsTest extends TestCase
         $this->assertCount(3, $group->students);
         $this->assertSame('Xalapa', $group->zone);
         $this->assertTrue($tutor->tutoredGroups->first()->is($group));
-        $this->assertTrue($group->students->first()->group->is($group));
+        $this->assertTrue($group->students()->with('group')->first()->group->is($group));
     }
 
     #[Test]
